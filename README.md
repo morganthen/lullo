@@ -36,3 +36,14 @@ Lullo generates personalised, AI-voiced bedtime stories for children. A parent f
 4. Run the dev server: `npm run dev`
 
 ## Environment Variables
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+ANTHROPIC_API_KEY=
+ELEVENLABS_API_KEY=
+NEXT_PUBLIC_SITE_URL=
+
+## Status
+
+Active development. Core generation flow complete. Stripe integration and UI polish in progress.
