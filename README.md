@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lullo – AI Bedtime Story Generator
+
+Lullo generates personalised, AI-voiced bedtime stories for children. A parent fills in a short form and gets back a fully narrated story in under a minute.
+
+## How it works
+
+1. Parent fills in child's name, age, theme, and an optional feeling to explore
+2. Claude generates a custom bedtime story
+3. ElevenLabs voices it with a curated narrator
+4. Story plays automatically with a built-in audio player
+5. Plus users can save stories to their personal library
+
+## Tech Stack
+
+- **Frontend** – Next.js 16, TypeScript, Tailwind CSS, Shadcn
+- **Backend** – Next.js API Routes
+- **Database & Auth** – Supabase (Postgres, Storage, OAuth)
+- **AI** – Claude Haiku (Anthropic)
+- **Text-to-Speech** – ElevenLabs
+- **Payments** – Stripe (coming soon)
+
+## Features
+
+- Google OAuth authentication
+- AI story generation via Claude API
+- Text-to-speech narration via ElevenLabs
+- Free tier: 3 stories per month
+- Plus tier: unlimited stories + save to library
+- Story library with playback and delete
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repo
+2. Install dependencies: `npm install`
+3. Copy `.env.local.example` to `.env.local` and fill in your keys
+4. Run the dev server: `npm run dev`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
