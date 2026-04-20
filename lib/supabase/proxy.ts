@@ -45,7 +45,7 @@ export async function updateSession(request: NextRequest) {
 
   const user = data?.claims;
 
-  const protectedRoutes = ["/dashboard", "/generate", "/library", "/settings"];
+  const protectedRoutes = ["/generate", "/library", "/settings"];
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
   );
@@ -58,7 +58,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && request.nextUrl.pathname.startsWith("/login")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/generate";
     return NextResponse.redirect(url);
   }
 

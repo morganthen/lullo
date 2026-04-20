@@ -93,40 +93,80 @@ export default function SettingsPage() {
   }
 
   return (
-    <div>
-      <h1>This is the settings page</h1>
-      <Label>Email:</Label>
-      <Input disabled value={userEmail} />
-      {plan === "plus" ? (
-        <Button onClick={handleManageSubscription}>Manage Subscription</Button>
-      ) : null}
-      {error && <p>{error}</p>}
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive">Delete Account</Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and all your saved stories.
-              {plan === "plus" && " You must cancel your subscription first."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={isLoading}
-              variant="destructive"
-              onClick={handleDeleteAccount}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    <main className="min-h-screen py-12 px-4">
+      <div className="max-w-xl mx-auto space-y-8">
+        <div>
+          <h1 className="font-heading text-3xl font-bold mb-1">Settings</h1>
+          <p className="text-muted-foreground text-sm">Manage your account.</p>
+        </div>
+
+        <div className="bg-card border rounded-2xl p-5 space-y-4">
+          <h2 className="font-heading text-lg font-semibold">Account</h2>
+          <div className="space-y-2">
+            <Label>Email</Label>
+            <Input disabled value={userEmail} />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Plan</p>
+              <p className="text-xs text-muted-foreground">
+                {plan === "plus"
+                  ? "Lullo Plus - unlimited stories"
+                  : "Free - 3 stories per month"}
+              </p>
+            </div>
+            {plan === "plus" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManageSubscription}
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Manage"}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {error && <p className="text-destructive text-sm">{error}</p>}
+
+        <div className="bg-card border rounded-2xl p-5 space-y-4">
+          <h2 className="font-heading text-lg font-semibold">Danger zone</h2>
+          <p className="text-sm text-muted-foreground">
+            Deleting your account is permanent and cannot be undone.
+            {plan === "plus" && " Cancel your subscription first."}
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                Delete account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete your account and all your saved
+                  stories.
+                  {plan === "plus" &&
+                    " You must cancel your subscription first."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={isLoading}
+                  variant="destructive"
+                  onClick={handleDeleteAccount}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </div>
+    </main>
   );
 }
 

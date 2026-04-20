@@ -1,7 +1,6 @@
 "use client";
 
-import AudioPlayer from "@/components/story/audio-player";
-import { Button } from "@/components/ui/button";
+import StoryCard from "@/components/story/storyCard";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 
@@ -9,6 +8,9 @@ type Story = {
   id: string;
   audio_url: string;
   story_text: string;
+  child_name: string;
+  theme: string;
+  created_at: string;
 };
 
 export default function LibraryPage() {
@@ -24,25 +26,19 @@ export default function LibraryPage() {
           data: { user },
           error,
         } = await supabase.auth.getUser();
-
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
         if (!user) return;
 
         const { data: storiesData, error: storiesError } = await supabase
           .from("stories")
-          .select("id, story_text, audio_url")
-          .eq("user_id", user.id);
+          .select("id, story_text, audio_url, child_name, theme, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
 
-        if (storiesError) {
-          throw storiesError;
-        }
+        if (storiesError) throw storiesError;
         setStories(storiesData);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        }
+        if (err instanceof Error) setError(err.message);
         console.error(err);
       }
     }
@@ -59,9 +55,7 @@ export default function LibraryPage() {
       });
       setStories((prev) => prev.filter((s) => s.id !== storyId));
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      }
+      if (err instanceof Error) setError(err.message);
       console.error(err);
     } finally {
       setDeletingId(null);
@@ -69,22 +63,32 @@ export default function LibraryPage() {
   }
 
   return (
-    <div>
-      <h1>This is the library page</h1>
-      {stories.map((story) => (
-        <div key={story.id}>
-          <p>{story.story_text}</p>
-          <AudioPlayer src={story.audio_url} />
-          <Button
-            variant="destructive"
-            disabled={deletingId === story.id}
-            onClick={() => handleDelete(story.id, story.audio_url)}
-          >
-            {deletingId === story.id ? "Deleting..." : "Delete"}
-          </Button>
-          {error && <p>{error}</p>}
+    <main className="min-h-screen py-12 px-4">
+      <div className="max-w-xl mx-auto space-y-8">
+        <div>
+          <h1 className="font-heading text-3xl font-bold mb-1">Your library</h1>
+          <p className="text-muted-foreground text-sm">
+            All the stories you have saved.
+          </p>
         </div>
-      ))}
-    </div>
+        {error && <p className="text-destructive text-sm">{error}</p>}
+        {stories.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            No stories saved yet. Generate one and save it.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {stories.map((story) => (
+              <StoryCard
+                key={story.id}
+                story={story}
+                onDelete={handleDelete}
+                isDeleting={deletingId === story.id}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

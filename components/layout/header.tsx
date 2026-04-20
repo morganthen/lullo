@@ -8,7 +8,7 @@ import LogoutButton from "./logout-button";
 
 export default function Header() {
   const [plan, setPlan] = useState<string>("");
-  const [error, setError] = useState<string>("");
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -34,9 +34,6 @@ export default function Header() {
       const url = await response.json();
       window.location.href = url;
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      }
       console.error("Error upgrading:", err);
     } finally {
       setIsLoading(false);
@@ -44,30 +41,39 @@ export default function Header() {
   }
 
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b">
-      <Link href="/generate" className="font-bold text-lg">
-        Lullo
-      </Link>
+    <header className="bg-background flex items-center justify-between px-6 py-4 border-b">
+      <div>
+        <Link href="/generate" className="font-bold text-lg">
+          {plan === "plus" ? (
+            <span>
+              Lullo{" "}
+              <span className="text-sm font-normal text-accent">plus</span>
+            </span>
+          ) : (
+            "Lullo"
+          )}
+        </Link>
+      </div>
       <nav>
         <ul className="flex gap-6 list-none">
           <li>
             <Link href="/generate">Generate</Link>
           </li>
-          <li>
-            <Link href="/library">Library</Link>
-          </li>
+          {plan === "plus" && (
+            <li>
+              <Link href="/library">Library</Link>
+            </li>
+          )}
           <li>
             <Link href="/settings">Settings</Link>
           </li>
         </ul>
       </nav>
       <div className="flex items-center gap-3">
-        {plan === "free" ? (
+        {plan === "free" && (
           <Button disabled={isLoading} onClick={handleUpgrade}>
             {isLoading ? "Redirecting..." : "Upgrade to Lullo Plus"}
           </Button>
-        ) : (
-          <span className="text-sm font-medium">Lullo Plus</span>
         )}
         <LogoutButton />
       </div>

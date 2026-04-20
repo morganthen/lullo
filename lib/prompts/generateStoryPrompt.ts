@@ -32,5 +32,6 @@ ${ageGuide}
 Use a ${tone} tone throughout.
 End with ${childName} feeling safe, sleepy, and at peace.
 Never excite the child. The story arc must wind down toward sleep.
-If the child feels awake and excited, then you have failed`;
+If the child feels awake and excited, then you have failed.
+Output plain text only. No markdown, no headers, no asterisks, no hashtags, no special characters.`;
 }

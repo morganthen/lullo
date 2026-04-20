@@ -158,92 +158,136 @@ export default function GeneratePage() {
     }
   }
   return (
-    <div>
-      <h1>Generate Your Story</h1>
-      {plan === "free" &&
-        (generationsUsed >= FREE_TIER_ALLOWANCE ? (
-          <p>You have no free stories left this month.</p>
-        ) : (
-          <p>
-            {FREE_TIER_ALLOWANCE - generationsUsed} free stories remaining this
-            month.
-          </p>
-        ))}
-      <form onSubmit={generateStory}>
-        <Label>Child&apos;s Name</Label>
-        <Input
-          placeholder="Enter child's name"
-          value={childName}
-          onChange={(e) => setChildName(e.target.value)}
-        />
-        <Label>Age Range</Label>
-        <Select value={ageRange} onValueChange={setAgeRange}>
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue placeholder="Select an age range" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Age</SelectLabel>
-              <SelectItem value="5">Under 5</SelectItem>
-              <SelectItem value="6">Under 8</SelectItem>
-              <SelectItem value="7">Under 12</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Label>Theme</Label>
-        {themes.map((theme) => (
-          <span
-            key={theme}
-            onClick={() => toggleTheme(theme)}
-            className={`px-3 py-1 rounded-full border text-sm cursor-pointer transition-colors ${
-              selectedThemes.includes(theme)
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground"
-            }`}
-          >
-            {theme}
-          </span>
-        ))}
-        <Label>Feeling</Label>
-        <Input
-          placeholder="e.g. nervous about school (optional)"
-          value={feeling}
-          onChange={(e) => setFeeling(e.target.value)}
-        />
-        <Select value={narrator} onValueChange={setNarrator}>
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue placeholder="Select a narrator" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Narrator</SelectLabel>
-              <SelectItem value="warm">Warn and Calm</SelectItem>
-              <SelectItem value="playful">Playful</SelectItem>
-              <SelectItem value="gentle">Gentle British</SelectItem>
-              <SelectItem value="cute">Cute</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Generating..." : "Generate"}
-        </Button>
-      </form>
-      {storyText && <p>{storyText}</p>}
-      {error && <p>{error}</p>}
-      {audioUrl && (
+    <main className="min-h-screen py-12 px-4">
+      <div className="max-w-xl mx-auto space-y-8">
         <div>
-          <AudioPlayer src={audioUrl} />
-          {plan === "plus" &&
-            (isSaved ? (
-              <p>Story saved!</p>
-            ) : (
-              <Button onClick={handleSaveStory} disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
-            ))}
-          {plan === "free" && <p>Upgrade to Lullo Plus to save stories.</p>}
+          <h1 className="font-heading text-3xl font-bold mb-1">
+            Create a story
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            A bedtime story made just for your little one.
+          </p>
         </div>
-      )}
-    </div>
+
+        {plan === "free" && (
+          <p className="text-sm text-muted-foreground">
+            {generationsUsed >= FREE_TIER_ALLOWANCE
+              ? "You have no free stories left this month."
+              : `${FREE_TIER_ALLOWANCE - generationsUsed} free stories remaining this month.`}
+          </p>
+        )}
+
+        <form onSubmit={generateStory} className="space-y-6">
+          <div className="space-y-2">
+            <Label>Child&apos;s Name</Label>
+            <Input
+              placeholder="Enter child's name"
+              value={childName}
+              onChange={(e) => setChildName(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Age Range</Label>
+            <Select value={ageRange} onValueChange={setAgeRange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select an age range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="5">Under 5</SelectItem>
+                  <SelectItem value="8">Under 8</SelectItem>
+                  <SelectItem value="12">Under 12</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Theme</Label>
+            <div className="flex flex-wrap gap-2">
+              {themes.map((theme) => (
+                <span
+                  key={theme}
+                  onClick={() => toggleTheme(theme)}
+                  className={`px-3 py-1 rounded-full border text-sm cursor-pointer transition-colors ${
+                    selectedThemes.includes(theme)
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground"
+                  }`}
+                >
+                  {theme}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>
+              Feeling{" "}
+              <span className="text-muted-foreground text-xs">(optional)</span>
+            </Label>
+            <Input
+              placeholder="e.g. nervous about school"
+              value={feeling}
+              onChange={(e) => setFeeling(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Narrator</Label>
+            <Select value={narrator} onValueChange={setNarrator}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a narrator" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="warm">Warm and Calm</SelectItem>
+                  <SelectItem value="playful">Playful</SelectItem>
+                  <SelectItem value="gentle">Gentle British</SelectItem>
+                  <SelectItem value="cute">Cute</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading ? "Generating..." : "Generate story"}
+          </Button>
+        </form>
+
+        {error && <p className="text-destructive text-sm">{error}</p>}
+
+        {storyText && (
+          <div className="space-y-4 border rounded-xl p-6 bg-card">
+            <p className="text-sm leading-relaxed">{storyText}</p>
+          </div>
+        )}
+
+        {audioUrl && (
+          <div className="space-y-3">
+            <AudioPlayer src={audioUrl} />
+            {plan === "plus" &&
+              (isSaved ? (
+                <p className="text-sm text-muted-foreground">Story saved.</p>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={handleSaveStory}
+                  disabled={isSaving}
+                  className="w-full"
+                >
+                  {isSaving ? "Saving..." : "Save story"}
+                </Button>
+              ))}
+            {plan === "free" && (
+              <p className="text-sm text-muted-foreground">
+                Upgrade to Lullo Plus to save stories.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
