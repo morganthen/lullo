@@ -20,21 +20,16 @@ export async function POST(request: Request) {
       switch (event.type) {
         case "checkout.session.completed":
           const session = event.data.object;
-          console.log("✅ checkout.session.completed received");
-          console.log("Metadata:", session.metadata);
           const supabaseUserId = session.metadata?.supabaseUserId;
-          console.log("supabaseUserId:", supabaseUserId);
 
           if (supabaseUserId) {
-            console.log("Updating plan for user:", supabaseUserId);
-            const { error } = await supabaseAdmin
+            await supabaseAdmin
               .from("profiles")
-              .update({ plan: "plus" })
+              .update({
+                plan: "plus",
+                stripe_customer_id: session.customer as string,
+              })
               .eq("id", supabaseUserId);
-            console.log("Update error:", error);
-            console.log("Update complete");
-          } else {
-            console.log("❌ No supabaseUserId found in metadata");
           }
           break;
         default:
