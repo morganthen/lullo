@@ -17,6 +17,7 @@ import { Theme, themes } from "@/lib/themes";
 import { StoryFormData } from "@/types/story";
 import AudioPlayer from "@/components/story/audio-player";
 import { createClient } from "@/lib/supabase/client";
+import { getUserProfile } from "@/lib/supabase/getUserProfile";
 
 const FREE_TIER_ALLOWANCE = 3;
 
@@ -37,38 +38,14 @@ export default function GeneratePage() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    async function getUserProfile() {
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
-
-        if (error) {
-          throw error;
-        }
-        if (!user) return;
-
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("generations_used, plan")
-          .eq("id", user.id)
-          .single();
-
-        if (profileError) {
-          throw profileError;
-        }
+    async function loadProfile() {
+      const profile = await getUserProfile();
+      if (profile) {
         setPlan(profile.plan);
         setGenerationsUsed(profile.generations_used);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        }
-        console.error(error);
       }
     }
-    getUserProfile();
+    loadProfile();
   }, []);
 
   function toggleTheme(t: Theme): void {
