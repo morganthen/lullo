@@ -4,6 +4,7 @@ import { getUserProfile } from "@/lib/supabase/getUserProfile";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import LogoutButton from "./logout-button";
 
 export default function Header() {
   const [plan, setPlan] = useState<string>("");
@@ -60,13 +61,16 @@ export default function Header() {
           </li>
         </ul>
       </nav>
-      {plan === "free" ? (
-        <Button disabled={isLoading} onClick={handleUpgrade}>
-          {isLoading ? "Redirecting..." : "Upgrade to Lullo Plus"}
-        </Button>
-      ) : (
-        <span className="text-sm font-medium">Lullo Plus</span>
-      )}
+      <div className="flex items-center gap-3">
+        {plan === "free" ? (
+          <Button disabled={isLoading} onClick={handleUpgrade}>
+            {isLoading ? "Redirecting..." : "Upgrade to Lullo Plus"}
+          </Button>
+        ) : (
+          <span className="text-sm font-medium">Lullo Plus</span>
+        )}
+        <LogoutButton />
+      </div>
     </header>
   );
 }
