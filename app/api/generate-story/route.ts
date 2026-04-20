@@ -21,11 +21,26 @@ export async function POST(request: Request) {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("generations_used, plan")
+      .select("generations_used, plan, reset_date")
       .eq("id", user.id)
       .single();
 
     if (error) throw error; //create more granular error message for better debugging in the future
+
+    //reset check
+    const now = new Date();
+    const resetDate = new Date(data.reset_date);
+    const needsReset =
+      now.getMonth() !== resetDate.getMonth() ||
+      now.getFullYear() !== resetDate.getFullYear();
+
+    if (needsReset) {
+      await supabaseAdmin
+        .from("profiles")
+        .update({ generations_used: 0, reset_date: now.toISOString() })
+        .eq("id", user.id);
+      data.generations_used = 0;
+    }
 
     if (data.plan === "free" && data.generations_used >= 3) {
       return NextResponse.json(
