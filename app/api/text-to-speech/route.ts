@@ -7,12 +7,12 @@ export async function POST(request: Request) {
   try {
     //parse request body as json
     const body = await request.json();
-    const { storyText, narrator } = body;
+    const { story, narrator } = body;
     const voiceId = voiceMap[narrator] ?? voiceMap["warm"];
 
-    if (!storyText || !voiceId) {
+    if (!story || !voiceId) {
       return NextResponse.json(
-        { error: "Missing storyText or voiceId" },
+        { error: "Missing story or voiceId" },
         { status: 400 },
       );
     }
@@ -22,14 +22,14 @@ export async function POST(request: Request) {
     });
 
     const audio = await client.textToSpeech.convert(voiceId, {
-      text: storyText,
-      model_id: "eleven_turbo_v2",
+      text: story,
+      model_id: "eleven_multilingual_v2",
       output_format: "mp3_44100_128",
       voice_settings: {
-        stability: 1,
-        similarity_boost: 1,
+        stability: 0.4,
+        similarity_boost: 0.75,
         style: 0,
-        speed: 0.7,
+        speed: 0.75,
       },
     });
 

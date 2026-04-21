@@ -7,7 +7,9 @@ import { useEffect, useState } from "react";
 type Story = {
   id: string;
   audio_url: string;
-  story_text: string;
+  story: string;
+  title: string;
+  description: string;
   child_name: string;
   theme: string;
   created_at: string;
@@ -31,7 +33,9 @@ export default function LibraryPage() {
 
         const { data: storiesData, error: storiesError } = await supabase
           .from("stories")
-          .select("id, story_text, audio_url, child_name, theme, created_at")
+          .select(
+            "id, story, title, description, audio_url, child_name, theme, created_at",
+          )
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
@@ -81,6 +85,8 @@ export default function LibraryPage() {
             {stories.map((story) => (
               <StoryCard
                 key={story.id}
+                title={story.title}
+                description={story.description}
                 story={story}
                 onDelete={handleDelete}
                 isDeleting={deletingId === story.id}

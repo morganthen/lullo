@@ -8,7 +8,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -16,7 +15,6 @@ import { useEffect, useState } from "react";
 import { Theme, themes } from "@/lib/themes";
 import { StoryFormData } from "@/types/story";
 import AudioPlayer from "@/components/story/audio-player";
-import { createClient } from "@/lib/supabase/client";
 import { getUserProfile } from "@/lib/supabase/getUserProfile";
 
 const FREE_TIER_ALLOWANCE = 3;
@@ -27,7 +25,9 @@ export default function GeneratePage() {
   const [selectedThemes, setSelectedThemes] = useState<Theme[]>([]);
   const [feeling, setFeeling] = useState<string>("");
   const [narrator, setNarrator] = useState<string>("");
-  const [storyText, setStoryText] = useState<string>("");
+  const [story, setStory] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [audioUrl, setAudioUrl] = useState<string>("");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -66,7 +66,7 @@ export default function GeneratePage() {
     setGenerationsUsed((prev) => prev + 1);
     setAudioUrl("");
     setAudioBlob(null);
-    setStoryText("");
+    setStory("");
     setIsSaved(false);
     setError("");
     setIsLoading(true);
@@ -95,13 +95,15 @@ export default function GeneratePage() {
       if (!response.ok) {
         throw new Error(data.error ?? "Failed to generate story");
       }
-      setStoryText(data.storyText);
+      setStory(data.story);
+      setTitle(data.title);
+      setDescription(data.description);
 
       //posting to elevenlabs
       const audioResponse = await fetch("/api/text-to-speech", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storyText: data.storyText, narrator }),
+        body: JSON.stringify({ story: data.story, narrator }),
       });
 
       if (!audioResponse.ok) {
@@ -134,7 +136,9 @@ export default function GeneratePage() {
       const formData = new FormData();
       formData.append("audio", audioBlob, "story.mp3");
       formData.append("childName", childName);
-      formData.append("storyText", storyText);
+      formData.append("story", story);
+      formData.append("title", title);
+      formData.append("description", description);
       formData.append("ageRange", ageRange);
       formData.append("selectedThemes", JSON.stringify(selectedThemes));
       formData.append("feeling", feeling);
@@ -244,7 +248,7 @@ export default function GeneratePage() {
                 <SelectGroup>
                   <SelectItem value="warm">Warm and Calm</SelectItem>
                   <SelectItem value="playful">Playful</SelectItem>
-                  <SelectItem value="gentle">Gentle British</SelectItem>
+                  <SelectItem value="gentle">Gentle</SelectItem>
                   <SelectItem value="cute">Cute</SelectItem>
                 </SelectGroup>
               </SelectContent>
@@ -258,9 +262,15 @@ export default function GeneratePage() {
 
         {error && <p className="text-destructive text-sm">{error}</p>}
 
-        {storyText && (
-          <div className="space-y-4 border rounded-xl p-6 bg-card">
-            <p className="text-sm leading-relaxed">{storyText}</p>
+        {story && (
+          <div className="space-y-3 border rounded-xl p-6 bg-card">
+            <div>
+              <h2 className="font-heading text-2xl font-bold">{title}</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {description}
+              </p>
+            </div>
+            <p className="text-sm leading-relaxed pt-2 border-t">{story}</p>
           </div>
         )}
 

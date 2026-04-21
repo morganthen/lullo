@@ -149,7 +149,7 @@ export default function SettingsPage() {
                   This will permanently delete your account and all your saved
                   stories.
                   {plan === "plus" &&
-                    " You must cancel your subscription first."}
+                    "You must cancel your subscription first."}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

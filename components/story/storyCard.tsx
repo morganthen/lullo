@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 type Story = {
   id: string;
   audio_url: string;
-  story_text: string;
+  story: string;
+  title: string;
+  description: string;
   child_name: string;
   theme: string;
   created_at: string;
@@ -14,16 +16,20 @@ type Story = {
 
 type StoryCardProps = {
   story: Story;
+  title: string;
+  description: string;
   onDelete: (id: string, audioUrl: string) => void;
   isDeleting: boolean;
 };
 
 export default function StoryCard({
   story,
+  title,
+  description,
   onDelete,
   isDeleting,
 }: StoryCardProps) {
-  const preview = story.story_text.slice(0, 120) + "...";
+  const preview = story.story.slice(0, 120) + "...";
   const date = new Date(story.created_at).toLocaleDateString("en-AU", {
     day: "numeric",
     month: "short",
@@ -35,9 +41,8 @@ export default function StoryCard({
       <div>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h3 className="font-heading text-lg font-semibold">
-              {story.child_name}&apos;s story
-            </h3>
+            <h3 className="font-heading text-lg font-semibold">{title}</h3>
+            <h3 className="font-heading text-sm">{description}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {story.theme} · {date}
             </p>

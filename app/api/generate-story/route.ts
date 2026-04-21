@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    //check for user first
     const supabase = await createClient();
 
     const {
@@ -17,17 +16,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    //query their profiles table
-
     const { data, error } = await supabase
       .from("profiles")
       .select("generations_used, plan, reset_date")
       .eq("id", user.id)
       .single();
 
-    if (error) throw error; //create more granular error message for better debugging in the future
+    if (error) throw error;
 
-    //reset check
     const now = new Date();
     const resetDate = new Date(data.reset_date);
     const needsReset =
@@ -52,7 +48,6 @@ export async function POST(request: Request) {
       );
     }
 
-    //1. parse request body as JSON
     const body = await request.json();
     const { childName, ageRange, selectedThemes, feeling, narrator } = body;
 
@@ -66,6 +61,7 @@ export async function POST(request: Request) {
     const client = new Anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
+
     const prompt = generateStoryPrompt({
       childName,
       ageRange,
@@ -73,26 +69,64 @@ export async function POST(request: Request) {
       feeling,
       narrator,
     });
+
     const generatedStory = await client.messages.create({
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }],
+      max_tokens: 2048,
       model: "claude-haiku-4-5",
+      tools: [
+        {
+          name: "output_story",
+          description:
+            "Outputs the generated bedtime story with a title and description",
+          input_schema: {
+            type: "object",
+            properties: {
+              title: {
+                type: "string",
+                description: "Short warm story title, max 6 words",
+              },
+              description: {
+                type: "string",
+                description: "One sentence summary for parents, max 20 words",
+              },
+              story: {
+                type: "string",
+                description: "The full story text",
+              },
+            },
+            required: ["title", "description", "story"],
+          },
+        },
+      ],
+      tool_choice: { type: "tool", name: "output_story" },
+      messages: [{ role: "user", content: prompt }],
     });
 
-    const storyText =
-      generatedStory.content[0].type === "text"
-        ? generatedStory.content[0].text
-        : "";
+    const toolUse = generatedStory.content.find(
+      (block) => block.type === "tool_use",
+    );
 
-    //update generations used here
+    if (!toolUse || toolUse.type !== "tool_use") {
+      return NextResponse.json(
+        { error: "Story generation failed. Please try again." },
+        { status: 500 },
+      );
+    }
+
+    const { title, description, story } = toolUse.input as {
+      title: string;
+      description: string;
+      story: string;
+    };
+
     const { error: updateError } = await supabaseAdmin
       .from("profiles")
       .update({ generations_used: data.generations_used + 1 })
       .eq("id", user.id);
 
-    if (updateError) throw updateError; // better error handling here for better debugging in the future
+    if (updateError) throw updateError;
 
-    return NextResponse.json({ storyText }, { status: 201 });
+    return NextResponse.json({ title, description, story }, { status: 201 });
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json(

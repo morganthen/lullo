@@ -32,6 +32,17 @@ ${ageGuide}
 Use a ${tone} tone throughout.
 End with ${childName} feeling safe, sleepy, and at peace.
 Never excite the child. The story arc must wind down toward sleep.
-If the child feels awake and excited, then you have failed.
-Output plain text only. No markdown, no headers, no asterisks, no hashtags, no special characters.`;
+
+Writing style requirements:
+- Use short sentences. Prefer 8 to 12 words per sentence.
+- Use ellipses (...) frequently to create natural pauses and gentle pacing.
+- If you have to repeat words, don't use commas INSTEAD separate them using ellipses (...) for better pacing.
+- Use commas generously to slow the rhythm.
+- Use soft, drowsy language. Slow verbs. Gentle adjectives.
+- Avoid complex sentences that run on without breath.
+- Each paragraph should feel like a slow exhale.
+
+Output plain text only. No markdown, no headers, no asterisks, no hashtags, no special characters.
+
+Return the result using the output_story tool with a title, description, and story.`;
 }

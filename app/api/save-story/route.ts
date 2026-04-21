@@ -21,9 +21,11 @@ export async function POST(request: Request) {
     const selectedThemes = JSON.parse(formData.get("selectedThemes") as string);
     const feeling = formData.get("feeling") as string;
     const narrator = formData.get("narrator") as string;
-    const storyText = formData.get("storyText") as string;
+    const story = formData.get("story") as string;
+    const description = formData.get("description") as string;
+    const title = formData.get("title") as string;
 
-    if (!audio || !childName || !ageRange || !storyText) {
+    if (!audio || !childName || !ageRange || !story || !description || !title) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -48,8 +50,10 @@ export async function POST(request: Request) {
       theme: selectedThemes.join(", "),
       feeling,
       voice_id: narrator,
-      story_text: storyText,
+      story: story,
       audio_url: publicUrl,
+      title: title,
+      description: description,
     });
 
     if (dbError) throw dbError;
