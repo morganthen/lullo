@@ -47,3 +47,19 @@ NEXT_PUBLIC_SITE_URL=
 ## Status
 
 Active development. Core generation flow complete. Stripe integration and UI polish in progress.
+
+## Lessons Learnt
+
+### Suspense without a fallback flash on empty data
+
+The library page uses `<Suspense>` to show a skeleton while stories load — but only when stories actually exist. On empty accounts the empty state renders immediately, with no skeleton flash.
+
+The problem: Suspense has to commit a fallback *before* the promise resolves, so it can't know whether the final list will be empty. A naive `<Suspense>` around the fetch shows the skeleton to every user, including first-timers with nothing to load.
+
+Fix — split into two queries:
+
+1. Cheap count query first (`.select("id", { count: "exact", head: true })`) — no row payload, just a number.
+2. If `count === 0`, render the empty state directly (no Suspense boundary mounted).
+3. If `count > 0`, kick off the full fetch in parallel and mount `<Suspense fallback={<Skeleton count={count} />}>`. Sizing the skeleton from the count avoids a second layout jump when the real rows arrive.
+
+The child reads the promise via `use(promise)`, then seeds local state (`useState(initial)`) so delete/optimistic updates still work after Suspense resumes.
