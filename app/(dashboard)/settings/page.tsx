@@ -28,18 +28,29 @@ export default function SettingsPage() {
   const router = useRouter();
 
   useEffect(() => {
+    let cancelled = false;
     async function loadData() {
-      const supabase = createClient();
-      const [
-        profile,
-        {
-          data: { user },
-        },
-      ] = await Promise.all([getUserProfile(), supabase.auth.getUser()]);
-      if (profile) setPlan(profile.plan);
-      if (user?.email) setUserEmail(user.email);
+      try {
+        const supabase = createClient();
+        const [
+          profile,
+          {
+            data: { user },
+          },
+        ] = await Promise.all([getUserProfile(), supabase.auth.getUser()]);
+        if (cancelled) return;
+        if (profile) setPlan(profile.plan);
+        if (user?.email) setUserEmail(user.email);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        console.error("Failed to load settings", err);
+      }
     }
     loadData();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleDeleteAccount() {

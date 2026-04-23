@@ -88,21 +88,16 @@ export default function StoryCard({
         animationDelay: `${index * 0.07}s`,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 6px 20px rgba(196,102,58,0.12)";
+        e.currentTarget.style.boxShadow = "0 6px 20px rgba(196,102,58,0.12)";
         e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 2px 8px rgba(196,102,58,0.06)";
+        e.currentTarget.style.boxShadow = "0 2px 8px rgba(196,102,58,0.06)";
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
       {/* Spine */}
-      <div
-        className="w-[5px] shrink-0"
-        style={{ background: spineColor }}
-      />
+      <div className="w-1.25 shrink-0" style={{ background: spineColor }} />
 
       {/* Content */}
       <div className="flex-1 p-4">

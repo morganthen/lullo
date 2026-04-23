@@ -12,7 +12,6 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   const [progress, setProgress] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<string>("0:00");
   const [duration, setDuration] = useState<string>("0:00");
-  const [durationSeconds, setDurationSeconds] = useState<number>(0);
 
   const bars = useMemo(
     () =>
@@ -66,7 +65,6 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   function handleLoadedMetadata() {
     if (!audioRef.current) return;
     setDuration(formatTime(audioRef.current.duration));
-    setDurationSeconds(audioRef.current.duration);
   }
 
   function handleEnded() {
@@ -92,7 +90,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
       />
 
       {/* Waveform */}
-      <div className="flex items-center gap-[1.5px] h-[52px] px-0.5">
+      <div className="flex items-center gap-[1.5px] h-13 px-0.5">
         {bars.map((h, i) => {
           const filled = i / bars.length < progress;
           return (
