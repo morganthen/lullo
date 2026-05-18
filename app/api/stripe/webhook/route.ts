@@ -18,7 +18,7 @@ export async function POST(request: Request) {
         process.env.STRIPE_WEBHOOK_SECRET!,
       );
       switch (event.type) {
-        case "checkout.session.completed":
+        case "checkout.session.completed": {
           const session = event.data.object;
           const supabaseUserId = session.metadata?.supabaseUserId;
 
@@ -32,6 +32,21 @@ export async function POST(request: Request) {
               .eq("id", supabaseUserId);
           }
           break;
+        }
+        case "customer.subscription.deleted": {
+          const subscription = event.data.object;
+          const customerId = subscription.customer;
+          if (customerId) {
+            await supabaseAdmin
+              .from("profiles")
+              .update({
+                plan: "free",
+                subscription_ends_at: null,
+              })
+              .eq("stripe_customer_id", customerId);
+          }
+          break;
+        }
         default:
           console.log(`Unhandled event type ${event.type}`);
       }
