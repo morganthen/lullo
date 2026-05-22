@@ -23,13 +23,23 @@ export async function POST(request: Request) {
           const supabaseUserId = session.metadata?.supabaseUserId;
 
           if (supabaseUserId) {
-            await supabaseAdmin
+            const { data, error, count } = await supabaseAdmin
               .from("profiles")
-              .update({
-                plan: "plus",
-                stripe_customer_id: session.customer as string,
-              })
+              .update(
+                {
+                  plan: "plus",
+                  stripe_customer_id: session.customer as string,
+                },
+                { count: "exact" },
+              )
               .eq("id", supabaseUserId);
+
+            console.log("[webhook] checkout.session.completed", {
+              data,
+              supabaseUserId,
+              count,
+              error,
+            });
           }
           break;
         }
@@ -37,14 +47,54 @@ export async function POST(request: Request) {
           const subscription = event.data.object;
           const customerId = subscription.customer;
           if (customerId) {
-            await supabaseAdmin
+            const { data, error, count } = await supabaseAdmin
               .from("profiles")
-              .update({
-                plan: "free",
-                subscription_ends_at: null,
-              })
+              .update(
+                {
+                  plan: "free",
+                  subscription_ends_at: null,
+                },
+                { count: "exact" },
+              )
               .eq("stripe_customer_id", customerId);
+
+            console.log("[webhook] checkout.session.deleted", {
+              data,
+              error,
+              count,
+              customerId,
+            });
           }
+          break;
+        }
+
+        case "customer.subscription.updated": {
+          const subscription = event.data.object;
+          const customerId = subscription.customer;
+
+          if (!customerId) break;
+
+          const endsAt = subscription.cancel_at
+            ? new Date(subscription.cancel_at * 1000).toISOString()
+            : null;
+
+          const { data, error, count } = await supabaseAdmin
+            .from("profiles")
+            .update(
+              {
+                subscription_ends_at: endsAt,
+              },
+              { count: "exact" },
+            )
+            .eq("stripe_customer_id", customerId);
+
+          console.log("[webhook] checkout.session.updated", {
+            data,
+            error,
+            count,
+            customerId,
+          });
+
           break;
         }
         default:

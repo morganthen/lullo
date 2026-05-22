@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 export type UserProfile = {
   plan: string;
   generations_used: number;
+  subscription_ends_at: string | null;
 };
 
 export async function getUserProfile(): Promise<UserProfile | null> {
@@ -16,7 +17,7 @@ export async function getUserProfile(): Promise<UserProfile | null> {
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("plan, generations_used")
+    .select("plan, generations_used, subscription_ends_at")
     .eq("id", user.id)
     .single();
 

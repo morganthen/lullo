@@ -21,6 +21,9 @@ import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const [plan, setPlan] = useState<string>("");
+  const [subscriptionEndsAt, setSubscriptionEndsAt] = useState<string | null>(
+    null,
+  );
   const [error, setError] = useState<string>("");
   const [userEmail, setUserEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -36,7 +39,10 @@ export default function SettingsPage() {
           data: { user },
         },
       ] = await Promise.all([getUserProfile(), supabase.auth.getUser()]);
-      if (profile) setPlan(profile.plan);
+      if (profile) {
+        setSubscriptionEndsAt(profile.subscription_ends_at);
+        setPlan(profile.plan);
+      }
       if (user?.email) setUserEmail(user.email);
     }
     loadData();
@@ -92,6 +98,20 @@ export default function SettingsPage() {
     }
   }
 
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
+  function planLabel(plan: string, endsAt: string | null): string {
+    if (plan === "free") return "Free - 3 stories per month";
+    if (endsAt) return `Lullo Plus — ending ${formatDate(endsAt)}`;
+    return "Lullo Plus - unlimited stories";
+  }
+
   return (
     <main className="min-h-screen py-12 px-4">
       <div className="max-w-xl mx-auto space-y-8">
@@ -110,9 +130,7 @@ export default function SettingsPage() {
             <div>
               <p className="text-sm font-medium">Plan</p>
               <p className="text-xs text-muted-foreground">
-                {plan === "plus"
-                  ? "Lullo Plus - unlimited stories"
-                  : "Free - 3 stories per month"}
+                {planLabel(plan, subscriptionEndsAt)}
               </p>
             </div>
             {plan === "plus" && (
